@@ -2,6 +2,9 @@ from lib2to3.pytree import convert
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
+from openpyxl import Workbook,load_workbook
+import csv
+
 
 eksen = open("C:\\Users\\ataka\\Desktop\\Sitev\\3eksen.txt")
 
@@ -20,6 +23,8 @@ robo = open("C:\\Users\\ataka\\Desktop\\Sitev\\robo.txt")
 robooku = robo.read()
 
 url3 = robooku
+
+
 
 #3eksen
 response = requests.get(url)
@@ -83,7 +88,7 @@ for i in range(len(roboisim)):
  
     robomEskiFiyat = ""
     roboisim[i] = (roboisim[i].text).strip("\n").strip("\n")
-    robofiyat[i] = (robofiyat[i].text).strip("\n").replace("\n","").replace("KDV Dahil","")
+    robofiyat[i] = (robofiyat[i].text).strip("\n").replace("\n","").replace("KDV Dahil ","")
     try:
      roboeskifiyat[i] = (roboeskifiyat[i].text).strip("").replace(""," ").strip() 
      robomEskiFiyat = roboeskifiyat[i].strip("\n").replace("","")
@@ -94,6 +99,12 @@ for i in range(len(roboisim)):
 df = pd.DataFrame(liste,columns = ["İsmi","Fiyat","Eski Fiyat"])
 dfr = pd.DataFrame(rliste,columns = ["İsmi","Fiyat","sEski Fiyat"])
 dfrobo = pd.DataFrame(roboliste,columns = ["İsmi","Fiyat","roboEski Fiyat"])
+
+wb = Workbook()
+ws = wb.active
+
+
+df.save("liste.xlsx")
 
 print(dfr)
 print(df)
