@@ -100,11 +100,11 @@ df = pd.DataFrame(liste,columns = ["İsmi","Fiyat","Eski Fiyat"])
 dfr = pd.DataFrame(rliste,columns = ["İsmi","Fiyat","sEski Fiyat"])
 dfrobo = pd.DataFrame(roboliste,columns = ["İsmi","Fiyat","roboEski Fiyat"])
 
-wb = Workbook()
-ws = wb.active
+#excel dosyası yazdırma
+#wb = Workbook()
+#ws = wb.active
 
-
-df.save("liste.xlsx")
+#df.save("liste.xlsx")
 
 print(dfr)
 print(df)
