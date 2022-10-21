@@ -8,6 +8,10 @@ import csv
 import numpy as np
 import xlsxwriter
 import xlrd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+
 
 eksen = open("C:\\Users\\3drea\\Desktop\\Siteveric-main\\3eksen.txt")
 
@@ -27,8 +31,32 @@ robooku = robo.read()
 
 url3 = robooku
 
+robon11 = open("C:\\Users\\3drea\\Desktop\\Siteveric-main\\robon11.txt")
 
+robon11oku = robon11.read()
 
+url4 = robon11oku
+
+#dolar = open("C:\\Users\\3drea\\Desktop\\Siteveric-main\\dolar.txt")
+
+#dollar = dolar.read()
+
+urldolar = "https://www.google.com/finance/quote/USD-TRY"
+
+#dolar
+response = requests.get(urldolar)
+html_icerigi = response.content
+soup = BeautifulSoup(html_icerigi,"html.parser")
+
+dolarfiyat = soup.find("div",{"class":"YMlKec fxKbKc"})
+
+dolarfiyat = (dolarfiyat.text).strip("\n").strip("\t").replace(".",",")
+
+dolarson = dolarfiyat
+
+dolarson2 = dolarson 
+
+print(dolarson)
 #3eksen
 response = requests.get(url)
 html_icerigi = response.content
@@ -38,19 +66,21 @@ eskifiyat = soup.find_all("div",{"class":"showcase-price-old"})
 fiyat = soup.find_all("div",{"class":"showcase-price-new"})
 isim = soup.find_all("div",{"class":"showcase-title"})
 
+
 liste = list()
 
 for i in range(len(isim)):
- 
+    
+   
     mEskiFiyat = ""
     isim[i] = (isim[i].text).strip("\n").strip("\t")
-    fiyat[i] = (fiyat[i].text).strip("\n").replace("\nTL"," TL").strip()
+    fiyat[i] = (fiyat[i].text).strip("\n").replace("TL","").strip()
     try:
-     eskifiyat[i] = (eskifiyat[i].text).strip("\n").replace("\nTL"," TL").strip() 
+     eskifiyat[i] = (eskifiyat[i].text).strip("\n").replace("\nTL","").strip() 
      mEskiFiyat = eskifiyat[i]
     except IndexError:
         mEskiFiyat = ""
-    liste.append([isim[i],fiyat[i],mEskiFiyat])
+    liste.append([isim[i],fiyat[i],dolarson])#,mEskiFiyat
 
 
 #3dream
@@ -60,6 +90,9 @@ soup = BeautifulSoup(html_icerigi,"html.parser")
 
 reskifiyat = soup.find_all("class",{"ins":"price dib mb__5"})
 rfiyat = soup.find_all("span",{"class":"price dib mb__5"})
+
+if isinstance(rfiyat, type(list)):
+  rfiyat = rfiyat[1]
 risim = soup.find_all("a",{"class":"cd chp"})
 
 rliste = list()
@@ -74,9 +107,11 @@ for i in range(len(risim)):
      rmEskiFiyat = reskifiyat[i]
     except IndexError:
         rmEskiFiyat = ""
-    rliste.append([risim[i],rfiyat[i],rmEskiFiyat])
+    rliste.append([risim[i],rfiyat[i]])
     
-    #roboboloq
+     #roboboloq
+
+     
 response = requests.get(url3)
 html_icerigi = response.content
 soup = BeautifulSoup(html_icerigi,"html.parser")
@@ -97,11 +132,37 @@ for i in range(len(roboisim)):
      robomEskiFiyat = roboeskifiyat[i].strip("\n").replace("","")
     except IndexError:
         robomEskiFiyat = ""
-    roboliste.append([roboisim[i],robofiyat[i],robomEskiFiyat])
+    roboliste.append([roboisim[i],robofiyat[i]])#,robomEskiFiyat
 
-df = pd.DataFrame(liste,columns = ["İsmi","Fiyat","Eski Fiyat"])
-dfr = pd.DataFrame(rliste,columns = ["İsmi","Fiyat","sEski Fiyat"])
-dfrobo = pd.DataFrame(roboliste,columns = ["İsmi","Fiyat","roboEski Fiyat"])
+#roboblogn11
+     
+response = requests.get(url4)
+html_icerigi = response.content
+soup = BeautifulSoup(html_icerigi,"html.parser")
+
+robon11eskifiyat = soup.find_all("div",{"class":"showcase-price-old"})
+robon11fiyat = soup.find_all("span",{"class":"newPrice cPoint priceEventClick"})
+robon11isim = soup.find_all("h3",{"class":"productName"})
+
+robon11liste = list()
+
+for i in range(len(robon11isim)):
+ 
+    robomn11EskiFiyat = ""
+    robon11isim[i] = (robon11isim[i].text).strip("\n").strip("\n").strip("               ")
+    robon11fiyat[i] = (robon11fiyat[i].text).strip("\n").replace("\n","").strip("TL").replace("TL","")
+    try:
+     robon11eskifiyat[i] = (robon11eskifiyat[i].text).strip("").replace("KDV Dahil"," ").strip() 
+     robomn11EskiFiyat = robon11eskifiyat[i].strip("\n").replace("","")
+    except IndexError:
+        robomn11EskiFiyat = ""
+    robon11liste.append([robon11isim[i],robon11fiyat[i],dolarson2])#,robomEskiFiyat
+
+
+df = pd.DataFrame(liste,columns = ["İsmi","Fiyat","dolar"])
+dfr = pd.DataFrame(rliste,columns = ["İsmi","Fiyat"])
+dfrobo = pd.DataFrame(roboliste,columns = ["İsmi","Fidyat"])
+dfrobon11 = pd.DataFrame(robon11liste,columns = ["İsmi","Fidyat","dolar"])
 
 #excel dosyası yazdırma
 #wb = Workbook()
@@ -118,33 +179,15 @@ dfrobo = pd.DataFrame(roboliste,columns = ["İsmi","Fiyat","roboEski Fiyat"])
 #inputWorkbook = xlrd.open_workbook(df)
 
 #df.to_excel("C:\\Users\\3drea\\Desktop\\Siteveric-main\\deneme1.xlsx", engine='xlsxwriter',sheet_name='3EKSEN'  )
-dfr.to_excel("C:\\Users\\3drea\\Desktop\\Siteveric-main\\deneme1.xlsx", engine='xlsxwriter',sheet_name='3dream'  )   
-#harfler = ["A","B","C","D"]
-#notlar = [85, 70, 55, 45]
+#dfr.to_excel("C:\\Users\\3drea\\Desktop\\Siteveric-main\\deneme1.xlsx", engine='xlsxwriter',sheet_name='3dream'  ) 
+with pd.ExcelWriter('C:\\Users\\3drea\\Desktop\\Siteveric-main\\deneme1.xlsx',engine='openpyxl',mode="a",if_sheet_exists="overlay") as writer:  
+    df.to_excel(writer, sheet_name='3Eksen')
+    dfr.to_excel(writer, sheet_name='3Dream') 
+    dfrobo.to_excel(writer, sheet_name='Robobloq')  
+    dfrobon11.to_excel(writer, sheet_name='Robobloq N11')
 
-#planSheet.write("B1","Notlar")
-
-#planSheet.write(1,0, harfler[0])
-#planSheet.write("A3", harfler[1])
-#planSheet.write("A4", harfler[2])
-#planSheet.write("A5", harfler[3])
-
-#planSheet.write("B2", harfler[0])
-#planSheet.write("B3", harfler[1])
-#planSheet.write("B4", harfler[2])
-#planSheet.write("B5", harfler[3])
-
-
-#sayfa.title = "İlk Çalışma Alanı"
-
-#sayfa = wb.create_sheet("Posta Kodları")
-#sayfa = wb.create_sheet("Ülkeler")
-
-#ws.append(["deneme","1","2"])
-#print(wb.sheetnames) 
-
-#wb.save("C:\\Users\\3drea\\Desktop\\Siteveric-main\\dosyaAdi.xlsx")
 
 print(dfr)
 print(df)
 print(dfrobo)
+print(dfrobon11)
